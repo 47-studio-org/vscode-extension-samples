@@ -11,21 +11,14 @@
 		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
 	"engines": {
-		"vscode": "^1.71.0"
+		"vscode": "^1.74.0"
 	},
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-		"onView:nodeDependencies",
-		"onView:ftpExplorer",
-		"onView:jsonOutline",
-		"onView:fileExplorer",
-		"onView:testView",
-		"onView:testViewDragAndDrop",
 		"onLanguage:json",
-		"onLanguage:jsonc",
-		"onCommand:testView.reveal"
+		"onLanguage:jsonc"
 	],
 	"main": "./out/extension.js",
 	"contributes": {
@@ -216,6 +209,7 @@
 				"properties": {
 					"jsonOutline.autorefresh": {
 						"type": "boolean",
+						"description": "Auto refresh the JSON outline view when the contents of the json file change.",
 						"default": false
 					}
 				}
@@ -226,18 +220,19 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
-		"lint": "eslint . --ext .ts,.tsx"
+		"lint": "eslint"
 	},
 	"devDependencies": {
+		"@eslint/js": "^9.13.0",
+		"@stylistic/eslint-plugin": "^2.9.0",
 		"@types/ftp": "^0.3.33",
 		"@types/mkdirp": "^0.5.2",
-		"@types/node": "^16.11.7",
+		"@types/node": "^20",
 		"@types/rimraf": "^2.0.2",
-		"@types/vscode": "^1.67.0",
-		"@typescript-eslint/eslint-plugin": "^5.30.0",
-		"@typescript-eslint/parser": "^5.30.0",
-		"eslint": "^8.13.0",
-		"typescript": "^4.8.4"
+		"@types/vscode": "^1.73.0",
+		"eslint": "^9.13.0",
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.16.0"
 	},
 	"dependencies": {
 		"ftp": "^0.3.10",

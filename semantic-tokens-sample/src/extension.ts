@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 const tokenTypes = new Map<string, number>();
 const tokenModifiers = new Map<string, number>();
 
-const legend = (function () {
+const legend = (function() {
 	const tokenTypesLegend = [
 		'comment', 'string', 'keyword', 'number', 'regexp', 'operator', 'namespace',
 		'type', 'struct', 'class', 'interface', 'enum', 'typeParameter', 'function',
@@ -21,7 +21,7 @@ const legend = (function () {
 })();
 
 export function activate(context: vscode.ExtensionContext) {
-	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider({ language: 'semanticLanguage'}, new DocumentSemanticTokensProvider(), legend));
+	context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider({ language: 'semanticLanguage' }, new DocumentSemanticTokensProvider(), legend));
 }
 
 interface IParsedToken {
@@ -33,7 +33,7 @@ interface IParsedToken {
 }
 
 class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
-	async provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
+	async provideDocumentSemanticTokens(document: vscode.TextDocument, _token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
 		const allTokens = this._parseText(document.getText());
 		const builder = new vscode.SemanticTokensBuilder();
 		allTokens.forEach((token) => {
@@ -53,8 +53,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 
 	private _encodeTokenModifiers(strTokenModifiers: string[]): number {
 		let result = 0;
-		for (let i = 0; i < strTokenModifiers.length; i++) {
-			const tokenModifier = strTokenModifiers[i];
+		for (const tokenModifier of strTokenModifiers) {
 			if (tokenModifiers.has(tokenModifier)) {
 				result = result | (1 << tokenModifiers.get(tokenModifier)!);
 			} else if (tokenModifier === 'notInLegend') {
@@ -88,6 +87,7 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
 					tokenModifiers: tokenData.tokenModifiers
 				});
 				currentOffset = closeOffset;
+				// eslint-disable-next-line no-constant-condition
 			} while (true);
 		}
 		return r;

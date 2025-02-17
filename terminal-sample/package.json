@@ -11,30 +11,16 @@
 		"url": "https://github.com/Microsoft/vscode-extension-samples"
 	},
 	"engines": {
-		"vscode": "^1.58.0"
+		"vscode": "^1.74.0"
 	},
+	"enabledApiProposals": [
+		"terminalDataWriteEvent",
+		"terminalDimensions"
+	],
 	"categories": [
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:terminalTest.createAndSend",
-		"onCommand:terminalTest.createTerminal",
-		"onCommand:terminalTest.createTerminalHideFromUser",
-		"onCommand:terminalTest.createZshLoginShell",
-		"onCommand:terminalTest.dimensions",
-		"onCommand:terminalTest.dispose",
-		"onCommand:terminalTest.hide",
-		"onCommand:terminalTest.onDidChangeTerminalDimensions",
-		"onCommand:terminalTest.onDidWriteTerminalData",
-		"onCommand:terminalTest.processId",
-		"onCommand:terminalTest.registerTerminalLinkProvider",
-		"onCommand:terminalTest.sendText",
-		"onCommand:terminalTest.sendTextNoNewLine",
-		"onCommand:terminalTest.show",
-		"onCommand:terminalTest.showPreserveFocus",
-		"onCommand:terminalTest.terminals",
-		"onCommand:terminalTest.updateEnvironment",
-		"onCommand:terminalTest.clearEnvironment",
 		"onTerminalProfile:terminalTest.terminal-profile"
 	],
 	"main": "./out/extension.js",
@@ -127,14 +113,20 @@
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
 		"watch": "tsc -watch -p ./",
-		"lint": "eslint . --ext .ts,.tsx"
+		"lint": "eslint",
+		"download-api": "dts dev",
+		"postinstall": "npm run download-api"
 	},
 	"devDependencies": {
-		"@types/node": "^16.11.7",
-		"@types/vscode": "^1.58.0",
-		"@typescript-eslint/eslint-plugin": "^5.30.0",
-		"@typescript-eslint/parser": "^5.30.0",
-		"eslint": "^8.13.0",
-		"typescript": "^4.8.4"
+		"@eslint/js": "^9.13.0",
+		"@stylistic/eslint-plugin": "^2.9.0",
+		"@types/node": "^20",
+		"@types/vscode": "^1.73.0",
+		"eslint": "^9.13.0",
+		"typescript": "^5.7.2",
+		"typescript-eslint": "^8.16.0"
+	},
+	"dependencies": {
+		"@vscode/dts": "^0.4.1"
 	}
 }

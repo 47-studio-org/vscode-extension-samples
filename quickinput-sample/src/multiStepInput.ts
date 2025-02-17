@@ -105,7 +105,7 @@ export async function multiStepInput(context: ExtensionContext) {
 
 	function shouldResume() {
 		// Could show a notification with the option to resume.
-		return new Promise<boolean>((resolve, reject) => {
+		return new Promise<boolean>((_resolve, _reject) => {
 			// noop
 		});
 	}
@@ -116,7 +116,7 @@ export async function multiStepInput(context: ExtensionContext) {
 		return name === 'vscode' ? 'Name not unique' : undefined;
 	}
 
-	async function getAvailableRuntimes(resourceGroup: QuickPickItem | string, token?: CancellationToken): Promise<QuickPickItem[]> {
+	async function getAvailableRuntimes(_resourceGroup: QuickPickItem | string, _token?: CancellationToken): Promise<QuickPickItem[]> {
 		// ...retrieve...
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		return ['Node 8.9', 'Node 6.11', 'Node 4.5']
@@ -147,6 +147,7 @@ interface QuickPickParameters<T extends QuickPickItem> {
 	totalSteps: number;
 	items: T[];
 	activeItem?: T;
+	ignoreFocusOut?: boolean;
 	placeholder: string;
 	buttons?: QuickInputButton[];
 	shouldResume: () => Thenable<boolean>;
@@ -160,12 +161,14 @@ interface InputBoxParameters {
 	prompt: string;
 	validate: (value: string) => Promise<string | undefined>;
 	buttons?: QuickInputButton[];
+	ignoreFocusOut?: boolean;
+	placeholder?: string;
 	shouldResume: () => Thenable<boolean>;
 }
 
 class MultiStepInput {
 
-	static async run<T>(start: InputStep) {
+	static async run(start: InputStep) {
 		const input = new MultiStepInput();
 		return input.stepThrough(start);
 	}
@@ -173,7 +176,7 @@ class MultiStepInput {
 	private current?: QuickInput;
 	private steps: InputStep[] = [];
 
-	private async stepThrough<T>(start: InputStep) {
+	private async stepThrough(start: InputStep) {
 		let step: InputStep | void = start;
 		while (step) {
 			this.steps.push(step);
@@ -201,7 +204,7 @@ class MultiStepInput {
 		}
 	}
 
-	async showQuickPick<T extends QuickPickItem, P extends QuickPickParameters<T>>({ title, step, totalSteps, items, activeItem, placeholder, buttons, shouldResume }: P) {
+	async showQuickPick<T extends QuickPickItem, P extends QuickPickParameters<T>>({ title, step, totalSteps, items, activeItem, ignoreFocusOut, placeholder, buttons, shouldResume }: P) {
 		const disposables: Disposable[] = [];
 		try {
 			return await new Promise<T | (P extends { buttons: (infer I)[] } ? I : never)>((resolve, reject) => {
@@ -209,6 +212,7 @@ class MultiStepInput {
 				input.title = title;
 				input.step = step;
 				input.totalSteps = totalSteps;
+				input.ignoreFocusOut = ignoreFocusOut ?? false;
 				input.placeholder = placeholder;
 				input.items = items;
 				if (activeItem) {
@@ -223,7 +227,8 @@ class MultiStepInput {
 						if (item === QuickInputButtons.Back) {
 							reject(InputFlowAction.back);
 						} else {
-							resolve(<any>item);
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
+							resolve((item as any));
 						}
 					}),
 					input.onDidChangeSelection(items => resolve(items[0])),
@@ -245,7 +250,7 @@ class MultiStepInput {
 		}
 	}
 
-	async showInputBox<P extends InputBoxParameters>({ title, step, totalSteps, value, prompt, validate, buttons, shouldResume }: P) {
+	async showInputBox<P extends InputBoxParameters>({ title, step, totalSteps, value, prompt, validate, buttons, ignoreFocusOut, placeholder, shouldResume }: P) {
 		const disposables: Disposable[] = [];
 		try {
 			return await new Promise<string | (P extends { buttons: (infer I)[] } ? I : never)>((resolve, reject) => {
@@ -255,6 +260,8 @@ class MultiStepInput {
 				input.totalSteps = totalSteps;
 				input.value = value || '';
 				input.prompt = prompt;
+				input.ignoreFocusOut = ignoreFocusOut ?? false;
+				input.placeholder = placeholder;
 				input.buttons = [
 					...(this.steps.length > 1 ? [QuickInputButtons.Back] : []),
 					...(buttons || [])
@@ -265,7 +272,8 @@ class MultiStepInput {
 						if (item === QuickInputButtons.Back) {
 							reject(InputFlowAction.back);
 						} else {
-							resolve(<any>item);
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
+							resolve(item as any);
 						}
 					}),
 					input.onDidAccept(async () => {

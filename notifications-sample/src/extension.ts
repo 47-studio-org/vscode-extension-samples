@@ -19,14 +19,14 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.window.showErrorMessage('Error Notification');
 	});
 
-	// Notifcation with actions
+	// Notification with actions
 	const showWarningNotificationWithActions = vscode.commands.registerCommand('notifications-sample.showWarningWithActions', async () => {
 		const selection = await vscode.window.showWarningMessage('Warning Notification With Actions', 'Action 1', 'Action 2', 'Action 3');
-		
+
 		if (selection !== undefined) {
 			vscode.window.showInformationMessage(`You selected: ${selection}`, { modal: true });
 		}
-		
+
 	});
 
 	// Progress notification with option to cancel

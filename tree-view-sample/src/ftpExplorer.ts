@@ -1,11 +1,6 @@
 import * as vscode from 'vscode';
 import * as Client from 'ftp';
-import { basename, dirname, join } from 'path';
-
-interface IEntry {
-	name: string;
-	type: string;
-}
+import { basename, dirname } from 'path';
 
 export interface FtpNode {
 
@@ -92,14 +87,14 @@ export class FtpModel {
 					}
 
 					let string = '';
-					stream.on('data', function (buffer) {
+					stream.on('data', function(buffer) {
 						if (buffer) {
 							const part = buffer.toString();
 							string += part;
 						}
 					});
 
-					stream.on('end', function () {
+					stream.on('end', function() {
 						client.end();
 						c(string);
 					});
@@ -116,7 +111,7 @@ export class FtpTreeDataProvider implements vscode.TreeDataProvider<FtpNode>, vs
 
 	constructor(private readonly model: FtpModel) { }
 
-	public refresh(): any {
+	public refresh() {
 		this._onDidChangeTreeData.fire(undefined);
 	}
 
@@ -137,12 +132,12 @@ export class FtpTreeDataProvider implements vscode.TreeDataProvider<FtpNode>, vs
 		return element ? this.model.getChildren(element) : this.model.roots;
 	}
 
-	public getParent(element: FtpNode): FtpNode | undefined{
+	public getParent(element: FtpNode): FtpNode | undefined {
 		const parent = element.resource.with({ path: dirname(element.resource.path) });
 		return parent.path !== '//' ? { resource: parent, isDirectory: true } : undefined;
 	}
 
-	public provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken): vscode.ProviderResult<string> {
+	public provideTextDocumentContent(uri: vscode.Uri, _token: vscode.CancellationToken): vscode.ProviderResult<string> {
 		return this.model.getContent(uri).then(content => content);
 	}
 }

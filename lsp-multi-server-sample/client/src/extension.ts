@@ -12,7 +12,7 @@ import {
 } from 'vscode-languageclient/node';
 
 let defaultClient: LanguageClient;
-const clients: Map<string, LanguageClient> = new Map();
+const clients = new Map<string, LanguageClient>();
 
 let _sortedWorkspaceFolders: string[] | undefined;
 function sortedWorkspaceFolders(): string[] {
@@ -61,10 +61,9 @@ export function activate(context: ExtensionContext) {
 		const uri = document.uri;
 		// Untitled files go to a default client.
 		if (uri.scheme === 'untitled' && !defaultClient) {
-			const debugOptions = { execArgv: ["--nolazy", "--inspect=6010"] };
 			const serverOptions = {
 				run: { module, transport: TransportKind.ipc },
-				debug: { module, transport: TransportKind.ipc, options: debugOptions}
+				debug: { module, transport: TransportKind.ipc }
 			};
 			const clientOptions: LanguageClientOptions = {
 				documentSelector: [
@@ -87,10 +86,9 @@ export function activate(context: ExtensionContext) {
 		folder = getOuterMostWorkspaceFolder(folder);
 
 		if (!clients.has(folder.uri.toString())) {
-			const debugOptions = { execArgv: ["--nolazy", `--inspect=${6011 + clients.size}`] };
 			const serverOptions = {
 				run: { module, transport: TransportKind.ipc },
-				debug: { module, transport: TransportKind.ipc, options: debugOptions}
+				debug: { module, transport: TransportKind.ipc }
 			};
 			const clientOptions: LanguageClientOptions = {
 				documentSelector: [
@@ -109,7 +107,7 @@ export function activate(context: ExtensionContext) {
 	Workspace.onDidOpenTextDocument(didOpenTextDocument);
 	Workspace.textDocuments.forEach(didOpenTextDocument);
 	Workspace.onDidChangeWorkspaceFolders((event) => {
-		for (const folder  of event.removed) {
+		for (const folder of event.removed) {
 			const client = clients.get(folder.uri.toString());
 			if (client) {
 				clients.delete(folder.uri.toString());
